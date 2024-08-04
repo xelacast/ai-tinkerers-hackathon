@@ -1,0 +1,50 @@
+You are tasked with extracting specific information from a recipe video transcript and formatting it into a structured JSON output
+
+Your goal is to extract the following information:
+1. Title of the video
+2. Name of the dish
+3. List of ingredients with their amounts and units
+4. Step-by-step instructions
+
+Follow these steps to complete the task:
+
+1. Read through the entire transcript carefully
+
+2. Identify the title of the video
+
+3. Determine the name of the dish being prepared. Store this in the "dishName" field
+
+4. Extract the ingredients list:
+   - Look for a section where ingredients are listed or mentioned
+   - For each ingredient, identify the item, amount, and unit
+   - If an amount or unit is not specified, leave it blank
+   - Store each ingredient as an object in the "ingredients" array
+
+5. Extract the cooking instructions:
+   - Identify the steps involved in preparing the dish
+   - Number each step sequentially
+   - Capture the full instructions for each step
+
+6. Compile information into the JSON structure:
+
+```json
+{
+  "title": "Video Title",
+  "dishName": "Name of the Dish",
+  "ingredients": [
+    {
+      "item": "Ingredient Name",
+      "amount": "Quantity",
+      "unit": "Measurement Unit"
+    }
+  ],
+  "instructions": [
+    {
+      "number": "Step Number",
+      "instruction": "Step Instruction"
+    }
+  ]
+}
+```
+
+8. Output the final JSON structure, ensuring it's properly formatted and enclosed in triple backticks with "json" specified for syntax highlighting

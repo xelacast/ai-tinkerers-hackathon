@@ -1,0 +1,27 @@
+Extract the ingredients and the instructions from this video.
+
+Make sure instructions are in sequential order from start to finish
+
+Use this json format as Structured Data.
+{
+  "title": "title",
+  "dishName": "dishName",
+  "ingredients": [
+    {
+      "item": "item",
+      "amount": "2",
+      "unit": "unit"
+    }
+  ],
+  "instructions": [
+    {
+      "number": "1",
+      "instruction": "instruction"
+    }
+  ]
+}
+
+
+If there is no information leave blank.
+
+DO NOT RETURN ANYTHING OTHER THAN THE JSON.
