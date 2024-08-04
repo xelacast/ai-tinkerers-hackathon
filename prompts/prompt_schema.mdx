@@ -1,0 +1,32 @@
+# Prompt Shchema
+
+Extract the following information from a recipe video:
+
+- title
+- dishName
+- ingredients
+- instructions
+
+These instructions should be in sequential order from start to finish.
+
+# Structured Data Output
+
+```json
+{
+  "title": "title",
+  "dishName": "dishName",
+  "ingredients": [
+    {
+      "item": "item",
+      "amount": "2",
+      "unit": "unit"
+    }
+  ],
+  "instructions": [
+    {
+      "number": "1",
+      "instruction": "instruction"
+    }
+  ]
+}
+```
