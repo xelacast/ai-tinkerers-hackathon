@@ -28,7 +28,7 @@ def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 # Load json db
-file_path = "../static/recipes.json"
+file_path = "../db/recipes.json"
 loader = JSONLoader(file_path=file_path, jq_schema=".[]", text_content=False)
 docs = loader.load()
 
