@@ -1,56 +1,59 @@
-#!/usr/bin/env python
-from typing import List
-# import os
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import HTMLResponse
+from groq_history import conversational_rag_chain_with_history
 
-from groq_agent import chain as groq_chain
+app = FastAPI()
 
-from fastapi import FastAPI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_groq import ChatGroq
-from langserve import add_routes
-from groq_history import rag_chain_with_source, conversational_rag_chain_with_history, rag_chain
-# from dotenv import load_dotenv
-# load_dotenv()
-# 1. Create prompt template
-# system_template = "Translate the following into {language}:"
-# prompt_template = ChatPromptTemplate.from_messages([
-#     ('system', system_template),
-#     ('user', '{text}')
-# ])
+html = """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
+"""
 
-# 2. Create model
-# model = ChatGroq(model="llama3-8b-8192", api_key=os.environ["GROQ_API_KEY"])
 
-# 3. Create parser
-# parser = StrOutputParser()
+@app.get("/")
+async def get():
+    return HTMLResponse(html)
 
-# 4. Create chain
-# chain = prompt_template | model | parser
+chat_history = []
+from langchain_core.messages import HumanMessage
 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
 
-# 4. App definition
-app = FastAPI(
-  title="LangChain Server",
-  version="1.0",
-  description="A simple API server using LangChain's Runnable interfaces",
-)
+        for chunk in conversational_rag_chain_with_history.stream({"input": data }, config={"configurable": {"session_id": "1"}}):
 
-# 5. Adding chain route
-
-add_routes(
-    app,
-    groq_chain,
-    path="/chain",
-)
-
-add_routes(
-    app,
-    rag_chain,
-    path="/rag",
-)
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="localhost", port=8000)
+            chunk = chunk.get("answer")
+            if chunk:
+                await websocket.send_text(f"Message text was: {chunk}")
